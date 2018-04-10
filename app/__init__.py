@@ -4,7 +4,7 @@ from re import sub
 app = Flask(__name__)
 
 @app.template_filter('type')
-def datetimeformat(value):
+def type(value):
     return type(value)
 
 @app.template_filter('datetimeformat')
