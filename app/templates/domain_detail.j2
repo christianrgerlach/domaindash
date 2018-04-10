@@ -5,11 +5,13 @@
 {% block content %}
         Name: {{ domain_name }}
         <br>
-        Registrar: {{ whois.registrar[0] }}
+        {# Registrar: <a href='http://www.google.com/search?q={{ whois.registrar[0] }}' target='_blank'>{{ whois.registrar[0] }}</a> #}
+        Registrar: <a href='{{ whois.registrar[0] | google_search }}' target='_blank'>{{ whois.registrar[0] }}</a>
+
         <br>
         Nameservers:
         {% for nameserver in whois.nameservers %}
-        {{ nameserver }}
+        <a href='https://whatismyipaddress.com/ip/{{ nameserver }}'>{{ nameserver }}</a>
         {% endfor %}
         <br>
         Registrar creation date: {{ whois.creation_date[0] | datetimeformat }}
@@ -18,6 +20,8 @@
         <br>
         Registrar expiration date: {{ whois.expiration_date[0] | datetimeformat }}
         <br>
-        SSL certificate expiry: {{ ssl_expiry_date | datetimeformat }}
+        SSL certificate expiration_date: {{ ssl_expiry_date | datetimeformat }}
+        <br>
+        {{ mxtoolbox_report['Failed'] }}
 
 {% endblock %}

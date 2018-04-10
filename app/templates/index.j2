@@ -3,7 +3,6 @@
 Index
 {% endblock %}
 {% block content %}
-
     <table>
         <tr>
             <th>Domain</th>
@@ -14,7 +13,7 @@ Index
 
     {% for domain_data in domains_data %}
         <tr>
-            <td> {{ domain_data[0] }} </td>
+            <td> <a href='http://localhost:5000/detail/{{ domain_data[0] }}'>{{ domain_data[0] }}</a> </td>
             <td>
                 {% if domain_data[1] == False %} {{ '<b>' }} {% endif %}
                     {{ domain_data[1] }}
@@ -32,8 +31,12 @@ Index
             </td>
         </tr>
     {% endfor %}
-
-
     </table>
+
+    <br>
+
+    <form action = "/build" method = "post">
+        <input type="submit" value="Refresh Data" />
+    </form>
 
 {% endblock %}

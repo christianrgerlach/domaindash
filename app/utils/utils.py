@@ -2,6 +2,23 @@ import socket
 import ssl
 import datetime
 import logging
+import requests
+import json
+import re
+
+mxtoolbox_api_key = 'd31bcf1f-e2d4-44ff-b13c-4a446318fe20'
+
+mxtoolbox_request_header = {'Authorization': mxtoolbox_api_key}
+
+def get_mxtoolbox_response(hostname):
+
+    response = requests.get('https://api.mxtoolbox.com/api/v1/lookup/mx/' + hostname, headers = mxtoolbox_request_header)
+
+    if response.status_code == 200:
+        return json.loads(response.content)
+    else:
+        return None
+
 
 def ssl_expiry_datetime(hostname):
     ssl_date_fmt = r'%b %d %H:%M:%S %Y %Z'
