@@ -9,25 +9,44 @@ Index
             <th>Healthy?</th>
             <th>Domain Expiration</th>
             <th>SSL Cert Expiration</th>
+            <th>MXToolbox</th>
         </tr>
 
     {% for domain_name, domain_data in domains_data.items() %}
         <tr>
             <td> <a href='http://localhost:5000/detail/{{ domain_name }}'>{{ domain_name }}</a> </td>
             <td>
-                {% if domain_data[0] == False %} {{ '<b>' }} {% endif %}
+                {% if domain_data[0] == False %} {{ "<b class='failed'>" | safe }} {% endif %}
                     {{ domain_data[0] }}
                 {% if domain_data[0] == False %} {{ '</b>' }} {% endif %}
             </td>
             <td>
-                {% if domain_data[1][0] == False %} {{ '<b>' }} {% endif %}
+                {% if domain_data[1][0] == False %} {{ "<b class='failed'>" | safe }} {% endif %}
                     {{ domain_data[1][1] }}
                 {% if domain_data[1][0] == False %} {{ '</b>' }} {% endif %}
             </td>
             <td> 
-                {% if domain_data[2][0] == False %} {{ '<b>' }} {% endif %}
+                {% if domain_data[2][0] == False %} {{ "<b class='failed'>" | safe }} {% endif %}
                     {{ domain_data[2][1] }}
                 {% if domain_data[2][0] == False %} {{ '</b>' }} {% endif %}
+            </td>
+            <td>
+                <ul>
+                {% for mxtoolbox_report, mxtoolbox_result in domain_data[3].items() %}
+                    <li>
+                    {% if mxtoolbox_result[0] == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                        {{ mxtoolbox_report }}: {{ mxtoolbox_result[0] }}
+                        <br>
+                        {# {{ mxtoolbox_result[1]['Failed'] }} #}
+                        {% for failures in mxtoolbox_result[1]['Failed']  %}
+                            {{ failures['Name'] }}: 
+                            <a href={{ failures['Url'] }} target='_blank'>{{ failures['Info'] }}</a>
+                            <br>
+                        {% endfor %}
+                    {% if mxtoolbox_result[0] == False %} {{ '</b>' }} {% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
             </td>
         </tr>
     {% endfor %}

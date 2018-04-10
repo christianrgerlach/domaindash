@@ -5,18 +5,27 @@ import logging
 import requests
 import json
 
-mxtoolbox_api_key = 'd31bcf1f-e2d4-44ff-b13c-4a446318fe20'
 
+mxtoolbox_api_key = 'd31bcf1f-e2d4-44ff-b13c-4a446318fe20'
 mxtoolbox_request_header = {'Authorization': mxtoolbox_api_key}
 
-def get_mxtoolbox_response(hostname):
-
-    response = requests.get('https://api.mxtoolbox.com/api/v1/lookup/mx/' + hostname, headers = mxtoolbox_request_header)
+def get_mxtoolbox_response(hostname, report):
+    response = requests.get('https://api.mxtoolbox.com/api/v1/lookup/' + report + '/' + hostname, headers = mxtoolbox_request_header)
 
     if response.status_code == 200:
         return json.loads(response.content)
     else:
         return None
+
+def get_mxtoolbox_report(hostname, reports):
+    compiled_reports = {}
+    for report in reports:
+        report_results = get_mxtoolbox_response(hostname, report)
+        if len(report_results['Failed']) > 0:
+           compiled_reports[report] = (False, report_results)
+        else:
+            compiled_reports[report] = (True, report_results)
+    return compiled_reports
 
 def ssl_expiry_datetime(hostname):
     ssl_date_fmt = r'%b %d %H:%M:%S %Y %Z'

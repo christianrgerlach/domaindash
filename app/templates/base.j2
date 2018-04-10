@@ -2,9 +2,18 @@
 
 <head>
     {% block head %}
-    <!-- <link rel='stylesheet' href='style.css'/> -->
     <title>{% block title %}{% endblock %} - DomainDash</title>
     {% endblock %}
+
+    <style>
+    table, th, td {
+        border: 1px solid black;
+    }
+    .failed {
+        color: red;
+    }
+    </style>
+
 </head>
     <body>
         <div id='header'>
