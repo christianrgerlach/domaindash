@@ -11,7 +11,7 @@ from app.utils import utils
 domain_health_threshold_days = 90
 
 domain_names = ['google.com', 'microsoft.com', 'yahoo.com', 'example.com', 'apple.com']
-#domain_names = ['example.com', 'apple.com']
+#domain_names = ['example.com']
 
 domains_data = {}
 
@@ -62,7 +62,7 @@ def build():
         domain_mxtoolbox_report_health = utils.get_mxtoolbox_report(domain_name, mxtoolbox_reports)
 
         for report, report_results in domain_mxtoolbox_report_health.items():
-            if report[0] == False:
+            if report_results[0] == False:
                 domain_health = False
                 break
 
