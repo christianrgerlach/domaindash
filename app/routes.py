@@ -10,8 +10,8 @@ from app.utils import utils
 
 domain_health_threshold_days = 90
 
-domain_names = ['google.com', 'microsoft.com', 'yahoo.com', 'example.com', 'apple.com']
-#domain_names = ['example.com']
+#domain_names = ['google.com', 'microsoft.com', 'yahoo.com', 'example.com', 'apple.com']
+domain_names = ['example.com']
 
 domains_data = {}
 
@@ -33,6 +33,12 @@ def domain_detail(domain_name):
         ssl_expiry_date = ssl_expiry_date,
         mxtoolbox_report = mxtoolbox_report
         )
+
+@app.route('/detail2/<domain_name>')
+def domain_detail2(domain_name):
+    domain_data = domains_data[domain_name]
+    return render_template('domain_detail2.j2', domain_name = domain_name, domain_data = domain_data)
+
 
 @app.route('/build', methods = ['POST'])
 def build():
