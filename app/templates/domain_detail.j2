@@ -6,7 +6,7 @@
         Name: {{ domain_name }}
         <br>
         {# Registrar: <a href='http://www.google.com/search?q={{ whois.registrar[0] }}' target='_blank'>{{ whois.registrar[0] }}</a> #}
-        Registrar: <a href='{{ whois.registrar[0] | google_search }}' target='_blank'>{{ whois.registrar[0] }}</a>
+        Registrar: <a href='{{ whois.registrar[0] | google_search}}' target='_blank'>{{ whois.registrar[0] }}</a>
 
         <br>
         Nameservers:

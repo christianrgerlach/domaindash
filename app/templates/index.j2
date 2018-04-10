@@ -6,28 +6,28 @@ Index
     <table>
         <tr>
             <th>Domain</th>
-            <th>Health</th>
+            <th>Healthy?</th>
             <th>Domain Expiration</th>
             <th>SSL Cert Expiration</th>
         </tr>
 
-    {% for domain_data in domains_data %}
+    {% for domain_name, domain_data in domains_data.items() %}
         <tr>
-            <td> <a href='http://localhost:5000/detail/{{ domain_data[0] }}'>{{ domain_data[0] }}</a> </td>
+            <td> <a href='http://localhost:5000/detail/{{ domain_name }}'>{{ domain_name }}</a> </td>
             <td>
-                {% if domain_data[1] == False %} {{ '<b>' }} {% endif %}
-                    {{ domain_data[1] }}
-                {% if domain_data[1] == False %} {{ '</b>' }} {% endif %}
+                {% if domain_data[0] == False %} {{ '<b>' }} {% endif %}
+                    {{ domain_data[0] }}
+                {% if domain_data[0] == False %} {{ '</b>' }} {% endif %}
             </td>
             <td>
+                {% if domain_data[1][0] == False %} {{ '<b>' }} {% endif %}
+                    {{ domain_data[1][1] }}
+                {% if domain_data[1][0] == False %} {{ '</b>' }} {% endif %}
+            </td>
+            <td> 
                 {% if domain_data[2][0] == False %} {{ '<b>' }} {% endif %}
                     {{ domain_data[2][1] }}
                 {% if domain_data[2][0] == False %} {{ '</b>' }} {% endif %}
-            </td>
-            <td> 
-                {% if domain_data[3][0] == False %} {{ '<b>' }} {% endif %}
-                    {{ domain_data[3][1] }}
-                {% if domain_data[3][0] == False %} {{ '</b>' }} {% endif %}
             </td>
         </tr>
     {% endfor %}

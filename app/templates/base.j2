@@ -2,18 +2,19 @@
 
 <head>
     {% block head %}
-    <!-- <link rel="stylesheet" href="style.css"/> -->
+    <!-- <link rel='stylesheet' href='style.css'/> -->
     <title>{% block title %}{% endblock %} - DomainDash</title>
     {% endblock %}
 </head>
     <body>
-        <div id="header">
+        <div id='header'>
+            <a href = '{{ url_for('index') | safe }}'> Index</a>
             <h1>DomainDash</h1>
         </div>
-        <div id="content">
+        <div id='content'>
             {% block content %} {% endblock %}
         </div>
-        <div id="footer">
+        <div id='footer'>
             <br>
             &copy; 2018
         </div>

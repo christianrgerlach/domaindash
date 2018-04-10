@@ -4,7 +4,6 @@ import datetime
 import logging
 import requests
 import json
-import re
 
 mxtoolbox_api_key = 'd31bcf1f-e2d4-44ff-b13c-4a446318fe20'
 
@@ -18,7 +17,6 @@ def get_mxtoolbox_response(hostname):
         return json.loads(response.content)
     else:
         return None
-
 
 def ssl_expiry_datetime(hostname):
     ssl_date_fmt = r'%b %d %H:%M:%S %Y %Z'

@@ -12,7 +12,7 @@ from app.utils import utils
 domain_health_threshold_days = 90
 
 domain_names = ['itsupportguys.com', 'itsupportguys.net']
-domains_data = []
+domains_data = {}
 
 @app.route('/')
 def index():
@@ -22,23 +22,19 @@ def index():
 def domain_detail(domain_name):
     whois = get_whois(domain_name, normalized = True)
     ssl_expiry_date = utils.ssl_expiry_datetime(domain_name)
-    mxtoolbox_report_raw = utils.get_mxtoolbox_response(domain_name)
-
-    #mxtoolbox_report_formatted = json.dumps(mxtoolbox_report_raw, indent = 4, sort_keys = True)
-
-    print(mxtoolbox_report_raw['Failed'])
+    mxtoolbox_report = utils.get_mxtoolbox_response(domain_name)
 
     return render_template('domain_detail.j2',
         domain_name = domain_name,
         whois = whois,
         ssl_expiry_date = ssl_expiry_date,
-        mxtoolbox_report = mxtoolbox_report_raw
+        mxtoolbox_report = mxtoolbox_report
         )
 
 @app.route('/build', methods = ['POST'])
 def build():
     global domains_data
-    domains_data = []
+    domains_data = {}
 
     domain_health_threshold_date = datetime.now() + timedelta(days = domain_health_threshold_days) 
 
@@ -46,10 +42,12 @@ def build():
         domain_whois = get_whois(domain_name, normalized = True)
         domain_registration_expiry_date = domain_whois['expiration_date'][0]
         domain_ssl_expiry_date = utils.ssl_expiry_datetime(domain_name)
+        domain_mxtoolbox_report = utils.get_mxtoolbox_response(domain_name)
 
         domain_health = True
         domain_registration_expiry_health = (True, domain_registration_expiry_date)
         domain_ssl_expiry_health = (True, domain_ssl_expiry_date)
+        domain_mxtoolbox_report_health = (True, domain_mxtoolbox_report)
 
         if domain_registration_expiry_date < domain_health_threshold_date:
             domain_health = False
@@ -59,8 +57,12 @@ def build():
             domain_health = False
             domain_ssl_expiry_health = (False, domain_ssl_expiry_date)
 
-        domain_data = (domain_name, domain_health, domain_registration_expiry_health, domain_ssl_expiry_health)
-        domains_data.append(domain_data)
+        if len(domain_mxtoolbox_report['Failed']) > 0:
+            domain_health = False
+            domain_mxtoolbox_report_health = (False, domain_mxtoolbox_report)
+
+        domain_data = (domain_health, domain_registration_expiry_health, domain_ssl_expiry_health)
+        domains_data[domain_name] = domain_data
 
     return redirect(url_for('index'))
 
