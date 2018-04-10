@@ -1,0 +1,23 @@
+{% extends "base.j2" %}
+{% block title %}
+{{ domain_name }}
+{% endblock %}
+{% block content %}
+        Name: {{ domain_name }}
+        <br>
+        Registrar: {{ whois.registrar[0] }}
+        <br>
+        Nameservers:
+        {% for nameserver in whois.nameservers %}
+        {{ nameserver }}
+        {% endfor %}
+        <br>
+        Registrar creation date: {{ whois.creation_date[0] | datetimeformat }}
+        <br>
+        Registrar updated date: {{ whois.updated_date[0] | datetimeformat }}
+        <br>
+        Registrar expiration date: {{ whois.expiration_date[0] | datetimeformat }}
+        <br>
+        SSL certificate expiry: {{ ssl_expiry_date | datetimeformat }}
+
+{% endblock %}

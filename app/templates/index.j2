@@ -1,0 +1,39 @@
+{% extends "base.j2" %}
+{% block title %}
+Index
+{% endblock %}
+{% block content %}
+
+    <table>
+        <tr>
+            <th>Domain</th>
+            <th>Health</th>
+            <th>Domain Expiration</th>
+            <th>SSL Cert Expiration</th>
+        </tr>
+
+    {% for domain_data in domains_data %}
+        <tr>
+            <td> {{ domain_data[0] }} </td>
+            <td>
+                {% if domain_data[1] == False %} {{ '<b>' }} {% endif %}
+                    {{ domain_data[1] }}
+                {% if domain_data[1] == False %} {{ '</b>' }} {% endif %}
+            </td>
+            <td>
+                {% if domain_data[2][0] == False %} {{ '<b>' }} {% endif %}
+                    {{ domain_data[2][1] }}
+                {% if domain_data[2][0] == False %} {{ '</b>' }} {% endif %}
+            </td>
+            <td> 
+                {% if domain_data[3][0] == False %} {{ '<b>' }} {% endif %}
+                    {{ domain_data[3][1] }}
+                {% if domain_data[3][0] == False %} {{ '</b>' }} {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+
+
+    </table>
+
+{% endblock %}

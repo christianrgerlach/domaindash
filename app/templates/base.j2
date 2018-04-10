@@ -1,0 +1,21 @@
+<html>
+
+<head>
+    {% block head %}
+    <!-- <link rel="stylesheet" href="style.css"/> -->
+    <title>{% block title %}{% endblock %} - DomainDash</title>
+    {% endblock %}
+</head>
+    <body>
+        <div id="header">
+            <h1>DomainDash</h1>
+        </div>
+        <div id="content">
+            {% block content %} {% endblock %}
+        </div>
+        <div id="footer">
+            <br>
+            &copy; 2018
+        </div>
+    </body>
+</html>
