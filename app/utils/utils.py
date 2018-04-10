@@ -5,8 +5,12 @@ import logging
 import requests
 import json
 
+#personal
+#mxtoolbox_api_key = 'd31bcf1f-e2d4-44ff-b13c-4a446318fe20'
 
-mxtoolbox_api_key = 'd31bcf1f-e2d4-44ff-b13c-4a446318fe20'
+#itsg
+mxtoolbox_api_key = 'bea9b9cc-01f7-4af9-af34-b2e99fdb7d4e'
+
 mxtoolbox_request_header = {'Authorization': mxtoolbox_api_key}
 
 def get_mxtoolbox_response(hostname, report):
@@ -15,6 +19,7 @@ def get_mxtoolbox_response(hostname, report):
     if response.status_code == 200:
         return json.loads(response.content)
     else:
+        print('Error!  Return code: ' + str(response.status_code) + '\n' + str(response.content))
         return None
 
 def get_mxtoolbox_report(hostname, reports):
