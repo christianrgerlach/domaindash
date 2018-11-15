@@ -8,6 +8,5 @@ Domain management dashboard:
 Currently builds a database in RAM on demand and is slow
 
 TODO:
-* Implement database backend (Postgresql or Redis w/ Sentinel)
+* Implement database backend (SQLite?)
 * Dynamic URLs (Flask url_for)
-* Dockerize
