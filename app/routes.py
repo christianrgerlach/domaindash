@@ -10,8 +10,8 @@ from app.utils import utils
 
 domain_health_threshold_days = 90
 
-#domain_names = ['google.com', 'microsoft.com', 'yahoo.com', 'example.com', 'apple.com']
-domain_names = ['example.com']
+domain_names = ['itsupportguys.com', 'itsupportguys.net', 'example.com', 'google.com', 'microsoft.com', 'yahoo.com', 'example.com', 'apple.com']
+#domain_names = ['example.com']
 
 domains_data = {}
 
