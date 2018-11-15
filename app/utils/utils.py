@@ -17,7 +17,7 @@ def get_mxtoolbox_response(hostname, report):
     response = requests.get('https://api.mxtoolbox.com/api/v1/lookup/' + report + '/' + hostname, headers = mxtoolbox_request_header)
 
     if response.status_code == 200:
-        return json.loads(response.content)
+        return json.loads(response.content.decode("utf-8"))
     else:
         print('Error!  Return code: ' + str(response.status_code) + '\n' + str(response.content))
         return None
