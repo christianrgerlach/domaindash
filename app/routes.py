@@ -10,7 +10,7 @@ from app.models import *
 
 domain_health_threshold_days = 90
 
-domain_names = ['itsupportguys.com']
+domain_names = ['fraplin.fun']
 
 domains_data = {}
 
