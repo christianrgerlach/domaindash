@@ -10,6 +10,7 @@ class MXToolboxApiQueryBatch(BaseModel):
 	datetime = DateTimeField()
 
 class Domain(BaseModel):
+	domain = ForeignKeyField(MXToolboxApiQueryBatch, backref = 'domains', null = True)
 	domain_name = CharField()
 	domain_health = BooleanField()
 	domain_registration_expiry_date = DateField()
