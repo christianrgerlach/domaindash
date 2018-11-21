@@ -7,6 +7,8 @@ from flask import send_from_directory, render_template, redirect, url_for
 from app import app
 from app.utils import utils
 
+from app.models import *
+
 domain_health_threshold_days = 90
 
 domain_names = ['itsupportguys.com']
@@ -51,31 +53,44 @@ def build():
         domain_registration_expiry_date = domain_whois['expiration_date'][0]
         domain_ssl_expiry_date = utils.ssl_expiry_datetime(domain_name)
         
-
         domain_health = True
         domain_registration_expiry_health = (True, domain_registration_expiry_date)
         domain_ssl_expiry_health = (True, domain_ssl_expiry_date)
 
         if domain_registration_expiry_date < domain_health_threshold_date:
             domain_health = False
-            domain_registration_expiry_health = (False, domain_registration_expiry_date)
+            domain_registration_expiry_health = False
 
         if domain_ssl_expiry_date < domain_health_threshold_date:
             domain_health = False
-            domain_ssl_expiry_health = (False, domain_ssl_expiry_date)
+            domain_ssl_expiry_health = False
 
+        domain = Domain.create(
+            domain_name = domain_name,
+            domain_health = domain_health,
+            domain_registration_expiry_date = domain_registration_expiry_date,
+            domain_registration_expiry_health = domain_registration_expiry_health,
+            domain_ssl_expiry_date = domain_ssl_expiry_date,
+            domain_ssl_expiry_health = domain_ssl_expiry_health
+        )
 
+        for report in mxtoolbox_reports:
+            mxtoolbox_response_json = utils.get_mxtoolbox_response(domain_name, report)
+            mxtoolbox_response = json.loads(mxtoolbox_response_json)
 
+            domain_mx_toolbox_health = True
+            if len(mxtoolbox_response['Failed']) > 0:
+               domain_mx_toolbox_health = False
+               domain.domain_health = False
+               domain.save()
 
-        domain_mxtoolbox_report_health = utils.get_mxtoolbox_report(domain_name, mxtoolbox_reports)
-
-        for report, report_results in domain_mxtoolbox_report_health.items():
-            if report_results[0] == False:
-                domain_health = False
-                break
-
-        domain_data = (domain_health, domain_registration_expiry_health, domain_ssl_expiry_health, domain_mxtoolbox_report_health)
-        domains_data[domain_name] = domain_data
+            report = MXToolboxReport.create(
+                domain = domain,
+                mx_toolbox_api_query_batch = None,
+                command = report,
+                response = mxtoolbox_response,
+                domain_mx_toolbox_health = domain_mx_toolbox_health
+                )
 
     return redirect(url_for('index'))
 

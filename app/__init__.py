@@ -5,7 +5,7 @@ from app.models import *
 
 db.connect()
 print('db init')
-db.create_tables([Domain, MXToolboxReport], safe = True)
+db.create_tables([Domain, MXToolboxReport, MXToolboxApiQueryBatch], safe = True)
 db.close()
 
 @app.before_request
