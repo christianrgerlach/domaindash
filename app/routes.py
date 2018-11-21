@@ -1,16 +1,15 @@
 import os
 from datetime import datetime, timedelta
 import json
-
-from flask import send_from_directory, render_template, redirect, url_for
 from pythonwhois import get_whois
+from flask import send_from_directory, render_template, redirect, url_for
 
 from app import app
 from app.utils import utils
 
 domain_health_threshold_days = 90
 
-domain_names = ['itsupportguys.com', 'itsupportguys.net', 'example.com', 'google.com', 'microsoft.com', 'yahoo.com', 'example.com', 'apple.com']
+domain_names = ['itsupportguys.com']
 #domain_names = ['example.com']
 
 domains_data = {}
@@ -64,6 +63,9 @@ def build():
         if domain_ssl_expiry_date < domain_health_threshold_date:
             domain_health = False
             domain_ssl_expiry_health = (False, domain_ssl_expiry_date)
+
+
+
 
         domain_mxtoolbox_report_health = utils.get_mxtoolbox_report(domain_name, mxtoolbox_reports)
 

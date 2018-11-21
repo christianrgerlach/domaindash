@@ -1,7 +1,21 @@
-from flask import Flask
 from re import sub
-    
-app = Flask(__name__)
+from app.app import app, db
+from app.models import *
+
+
+db.connect()
+print('db init')
+db.create_tables([Domain, MXToolboxReport], safe = True)
+db.close()
+
+@app.before_request
+def before_request():
+    db.connect()
+
+@app.after_request
+def after_request(response):
+    db.close()
+    return response
 
 @app.template_filter('type')
 def type(value):
@@ -17,8 +31,4 @@ def google_search(value):
 	url = 'http://www.google.com/search?q=' + query
 	return url
 
-
-
-
 from app import routes
-
