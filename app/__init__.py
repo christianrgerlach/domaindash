@@ -2,7 +2,6 @@ from re import sub
 from app.app import app, db
 from app.models import *
 
-
 db.connect()
 print('db init')
 db.create_tables([Domain, MXToolboxReport, MXToolboxApiQueryBatch], safe = True)

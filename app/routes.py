@@ -6,13 +6,11 @@ from flask import send_from_directory, render_template, redirect, url_for
 
 from app import app
 from app.utils import utils
-
 from app.models import *
 
 domain_health_threshold_days = 90
 
 domain_names = ['itsupportguys.com']
-#domain_names = ['example.com']
 
 domains_data = {}
 
@@ -43,9 +41,6 @@ def domain_detail2(domain_name):
 
 @app.route('/build', methods = ['POST'])
 def build():
-    global domains_data
-    domains_data = {}
-
     domain_health_threshold_date = datetime.now() + timedelta(days = domain_health_threshold_days) 
 
     for domain_name in domain_names:
