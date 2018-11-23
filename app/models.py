@@ -5,12 +5,8 @@ class BaseModel(Model):
     class Meta:
         database = db
 
-class MXToolboxApiQueryBatch(BaseModel):
-	count = IntegerField()
-	datetime = DateTimeField()
-
 class Domain(BaseModel):
-	domain = ForeignKeyField(MXToolboxApiQueryBatch, backref = 'domains', null = True)
+	domain_check_time = DateTimeField()
 	domain_name = CharField()
 	domain_health = BooleanField()
 	domain_registration_expiry_date = DateField()
@@ -20,7 +16,7 @@ class Domain(BaseModel):
 
 class MXToolboxReport(BaseModel):
 	domain = ForeignKeyField(Domain, backref = 'mx_toolbox_reports')
-	mx_toolbox_api_query_batch = ForeignKeyField(Domain, backref = 'mx_toolbox_reports', null = True)
+	mxtoolbox_check_time = DateTimeField
 	command = CharField()
 	response = TextField()
 	domain_mx_toolbox_health = BooleanField()

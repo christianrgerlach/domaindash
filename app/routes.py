@@ -62,6 +62,7 @@ def build():
 
         domain = Domain.create(
             domain_name = domain_name,
+            domain_check_time = datetime.now(),
             domain_health = domain_health,
             domain_registration_expiry_date = domain_registration_expiry_date,
             domain_registration_expiry_health = domain_registration_expiry_health,
@@ -81,7 +82,7 @@ def build():
 
             report = MXToolboxReport.create(
                 domain = domain,
-                mx_toolbox_api_query_batch = None,
+                mx_toolbox_check_time = datetime.now(),
                 command = report,
                 response = mxtoolbox_response,
                 domain_mx_toolbox_health = domain_mx_toolbox_health
