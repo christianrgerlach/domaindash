@@ -12,7 +12,7 @@ Index
             <th>MXToolbox</th>
         </tr>
 
-    {% for domain_name, domain_data in domains_data.items() %}
+{#     {% for domain_name, domain_data in domains_data.items() %}
         <tr>
             <td> <a href='http://localhost:5000/detail/{{ domain_name }}'>{{ domain_name }}</a> </td>
             <td>
@@ -37,7 +37,7 @@ Index
                     {% if mxtoolbox_result[0] == False %} {{ "<b class='failed'>" | safe }} {% endif %}
                         {{ mxtoolbox_report }}: {{ mxtoolbox_result[0] }}
                         <br>
-                        {# {{ mxtoolbox_result[1]['Failed'] }} #}
+                        {{ mxtoolbox_result[1]['Failed'] }}
                         {% for failures in mxtoolbox_result[1]['Failed']  %}
                             {{ failures['Name'] }}: 
                             <a href={{ failures['Url'] }} target='_blank'>{{ failures['Info'] }}</a>
@@ -49,7 +49,7 @@ Index
                 </ul>
             </td>
         </tr>
-    {% endfor %}
+    {% endfor %} #}
     </table>
 
     <br>
