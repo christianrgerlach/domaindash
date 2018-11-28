@@ -5,7 +5,7 @@ from app.utils import utils
 from app.models import *
 
 domain_health_threshold_days = 90
-domain_names = ['fraplin.fun', 'example.com', 'ojaimark.com']
+domain_names = ['google.com', 'itsupportguys.com']
 mxtoolbox_reports = ['a', 'dns', 'mx', 'spf', 'blacklist']
 
 def update():
@@ -18,7 +18,9 @@ def build():
 
         domain_whois = get_whois(domain_name, normalized = True)
         domain_registration_expiry_date = domain_whois['expiration_date'][0]
-        domain_ssl_expiry_date = utils.ssl_expiry_datetime(domain_name)
+        ssl_info = utils.get_ssl_info(domain_name)
+        domain_ssl_issuer_cn = ssl_info[0]
+        domain_ssl_expiry_date = ssl_info[1]
         
         domain_health = True
         domain_registration_expiry_health = (True, domain_registration_expiry_date)
@@ -41,10 +43,12 @@ def build():
                 'domain_health' : domain_health,
                 'domain_registration_expiry_date' : domain_registration_expiry_date,
                 'domain_registration_expiry_health' : domain_registration_expiry_health,
+                'domain_ssl_issuer_cn' : domain_ssl_issuer_cn,
                 'domain_ssl_expiry_date' : domain_ssl_expiry_date,
                 'domain_ssl_expiry_health' : domain_ssl_expiry_health
             }
         )[0]
+        # ^ get_or_create returns tuple, with second value bool representing creation
 
         for report in mxtoolbox_reports:
             mxtoolbox_response_json = utils.get_mxtoolbox_response(domain_name, report)

@@ -11,6 +11,7 @@ class Domain(BaseModel):
 	domain_health = BooleanField()
 	domain_registration_expiry_date = DateField()
 	domain_registration_expiry_health = BooleanField()
+	domain_ssl_issuer_cn = CharField()
 	domain_ssl_expiry_date = DateField()
 	domain_ssl_expiry_health = BooleanField()
 	domain_mxtoolbox_health = BooleanField(null = True)

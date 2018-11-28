@@ -1,4 +1,4 @@
 from utils import utils
 
 if __name__ == '__main__':
-	print (utils.ssl_expiry_datetime('google.com'))
+	print (utils.get_ssl_info('google.com'))

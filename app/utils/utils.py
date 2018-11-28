@@ -20,7 +20,7 @@ def get_mxtoolbox_response(hostname, report):
         print('Error!  Return code: ' + str(response.status_code) + '\n' + str(response.content))
         return None
 
-def ssl_expiry_datetime(hostname):
+def get_ssl_info(hostname):
     ssl_date_fmt = r'%b %d %H:%M:%S %Y %Z'
     context = ssl.create_default_context()
     conn = context.wrap_socket(
@@ -31,12 +31,19 @@ def ssl_expiry_datetime(hostname):
     conn.settimeout(3.0)
     conn.connect((hostname, 443))
     ssl_info = conn.getpeercert()
-    return datetime.datetime.strptime(ssl_info['notAfter'], ssl_date_fmt)
 
-def ssl_valid_time_remaining(hostname):
-    expires = ssl_expiry_datetime(hostname)
-    logging.debug(
-     "SSL cert for %s expires at %s",
-     hostname, expires.isoformat()
-    )
-    return expires - datetime.datetime.utcnow()
+    issuer_info = ssl_info['issuer']
+
+    issuer_cn = '?'
+    for item in issuer_info:
+        if item[0][0].lower() == 'commonName'.lower():
+            issuer_cn = item[0][1]
+    return issuer_cn, datetime.datetime.strptime(ssl_info['notAfter'], ssl_date_fmt)
+
+# def ssl_valid_time_remaining(hostname):
+#     expires = ssl_expiry_datetime(hostname)
+#     logging.debug(
+#      "SSL cert for %s expires at %s",
+#      hostname, expires.isoformat()
+#     )
+#     return expires - datetime.datetime.utcnow()
