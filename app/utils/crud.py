@@ -5,7 +5,7 @@ from app.utils import utils
 from app.models import *
 
 domain_health_threshold_days = 90
-domain_names = ['itsupportguys.net']
+domain_names = ['fraplin.fun', 'example.com', 'ojaimark.com']
 mxtoolbox_reports = ['a', 'dns', 'mx', 'spf', 'blacklist']
 
 def update():

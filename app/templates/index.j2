@@ -32,15 +32,23 @@ Index
                 {% if domain.domain_ssl_expiry_health == False %} {{ '</b>' }} {% endif %}
             </td>
             <td>
-
-                {% for mxtoolbox_reports in domain_mxtoolbox_reports[domain.domain_name] %}
-                    {% for mxtoolbox_report_type, mxtoolbox_report_response in mxtoolbox_reports %}
-                       {% for key, value in mxtoolbox_report_response.items() %}
-                          <h1>Key: {{key}}</h1>
-                          <h2>Value: {{value}}</h2>
-                       {% endfor %}
+                {# {{ domain_mxtoolbox_reports[domain.domain_name]['a'] }} #}
+                {% if domain.domain_mxtoolbox_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                    {% for mxtoolbox_report_type, mxtoolbox_report_response in domain_mxtoolbox_reports[domain.domain_name].items() %}
+                            <b> {{ mxtoolbox_report_type }}: </b>
+                            <br>
+                                {% for warnings in domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Warning']  %}
+                                {{ warnings['Name'] }}: 
+                                <a href={{ warnings['Url'] }} target='_blank'>{{ warnings['Info'] }}</a>
+                                <br>
+                            {% endfor %}
+                            {% for failures in domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed']  %}
+                                {{ failures['Name'] }}: 
+                                <a href={{ failures['Url'] }} target='_blank'>{{ failures['Info'] }}</a>
+                                <br>
+                            {% endfor %}
                     {% endfor %}
-                {% endfor %}
+                {% if domain.domain_mxtoolbox_health == False %} {{ '</b>' }} {% endif %}
             </td>
         </tr>
     {% endfor %}

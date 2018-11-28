@@ -21,11 +21,6 @@ def index():
             mxtoolbox_reports[mxtoolbox_report.command] = json.loads(mxtoolbox_report.response)
         domain_mxtoolbox_reports[domain.domain_name] = mxtoolbox_reports
 
-        # for key, value in domain_mxtoolbox_reports[domain.domain_name].items():
-        #     print(key)
-        #     print(domain_mxtoolbox_reports[domain.domain_name][key]['Failed'])
-
-
     return render_template('index.j2', domains = domains, domain_mxtoolbox_reports = domain_mxtoolbox_reports)
 
 # @app.route('/detail/<domain_name>')
