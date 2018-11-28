@@ -12,50 +12,61 @@ Index
             <th>MXToolbox</th>
         </tr>
 
-    {% for domain_name, domain_data in domains_data.items() %}
+    {% for domain in domains %}
         <tr>
-            <td> <a href='http://localhost:5000/detail/{{ domain_name }}'>{{ domain_name }}</a> </td>
+            <td> <a href='http://localhost:5000/detail/{{ domain.domain_name }}'>{{ domain.domain_name }}</a> </td>
             <td>
-                {% if domain_data[0] == False %} {{ "<b class='failed'>" | safe }} {% endif %}
-                    {{ domain_data[0] }}
-                {% if domain_data[0] == False %} {{ '</b>' }} {% endif %}
+                {% if domain.domain_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                    {{ domain.domain_health }}
+                {% if domain.domain_health == False %} {{ '</b>' }} {% endif %}
             </td>
             <td>
-                {% if domain_data[1][0] == False %} {{ "<b class='failed'>" | safe }} {% endif %}
-                    {{ domain_data[1][1] }}
-                {% if domain_data[1][0] == False %} {{ '</b>' }} {% endif %}
-            </td>
-            <td> 
-                {% if domain_data[2][0] == False %} {{ "<b class='failed'>" | safe }} {% endif %}
-                    {{ domain_data[2][1] }}
-                {% if domain_data[2][0] == False %} {{ '</b>' }} {% endif %}
+                {% if domain.domain_registration_expiry_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                    {{ domain.domain_registration_expiry_date }}
+                {% if domain.domain_registration_expiry_health == False %} {{ '</b>' }} {% endif %}
             </td>
             <td>
-                <ul>
-                {% for mxtoolbox_report, mxtoolbox_result in domain_data[3].items() %}
-                    <li>
-                    {% if mxtoolbox_result[0] == False %} {{ "<b class='failed'>" | safe }} {% endif %}
-                        {{ mxtoolbox_report }}: {{ mxtoolbox_result[0] }}
-                        <br>
-                        {# {{ mxtoolbox_result[1]['Failed'] }} #}
-                        {% for failures in mxtoolbox_result[1]['Failed']  %}
-                            {{ failures['Name'] }}: 
-                            <a href={{ failures['Url'] }} target='_blank'>{{ failures['Info'] }}</a>
-                            <br>
-                        {% endfor %}
-                    {% if mxtoolbox_result[0] == False %} {{ '</b>' }} {% endif %}
-                    </li>
-                {% endfor %}
-                </ul>
+                {% if domain.domain_ssl_expiry_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                    {{ domain.domain_ssl_expiry_date }}
+                {% if domain.domain_ssl_expiry_health == False %} {{ '</b>' }} {% endif %}
+            </td>
+            <td>
+                    {% for mxtoolbox_report_type, mxtoolbox_report_response in domain_mxtoolbox_reports[domain.domain_name].items() %}
+                        {% if (domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Warnings'] | length > 0) or
+                            (domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed'] | length > 0) %}
+                            <b> {{ mxtoolbox_report_type }}: </b>
+                        
+                                {% if domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Warnings'] | length > 0 %}
+                                    <br>
+                                    Warnings:
+                                    <br>
+                                    {% for warnings in domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Warnings']  %}
+                                        {{ warnings['Name'] }}:
+                                        <a href={{ warnings['Url'] }} target='_blank'>{{ warnings['Info'] }}</a>
+                                        <br>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed'] | length > 0 %}
+                                <br>
+                                    Failures:
+                                    <br>
+                                   {% if domain.domain_mxtoolbox_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                                        {% for failures in domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed']  %}
+                                            {{ failures['Name'] }}: 
+                                            <a href={{ failures['Url'] }} target='_blank'>{{ failures['Info'] }}</a>
+
+                                            <br>
+                                        {% endfor %}
+                                    {% if domain.domain_mxtoolbox_health == False %} {{ '</b>' }} {% endif %}
+                                {% endif %}
+                        {% endif %}
+                    {% endfor %}
             </td>
         </tr>
     {% endfor %}
     </table>
-
     <br>
-
     <form action = '/build' method = 'post'>
         <input type='submit' value='Build Database' />
     </form>
-
 {% endblock %}
