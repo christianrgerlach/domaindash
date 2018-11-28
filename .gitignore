@@ -1,4 +1,5 @@
 *.pyc
 ._*
 venv*
-domaindash.db
+*.db
+
