@@ -8,6 +8,7 @@ Index
             <th>Domain</th>
             <th>Healthy?</th>
             <th>Domain Expiration</th>
+            <th>SSL Cert CA</th>
             <th>SSL Cert Expiration</th>
             <th>MXToolbox</th>
         </tr>
@@ -24,6 +25,9 @@ Index
                 {% if domain.domain_registration_expiry_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
                     {{ domain.domain_registration_expiry_date }}
                 {% if domain.domain_registration_expiry_health == False %} {{ '</b>' }} {% endif %}
+            </td>
+            <td>
+                {{ domain.domain_ssl_issuer_cn }}
             </td>
             <td>
                 {% if domain.domain_ssl_expiry_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
