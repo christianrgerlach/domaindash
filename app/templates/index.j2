@@ -33,7 +33,7 @@ Index
             <td>
                     {% for mxtoolbox_report_type, mxtoolbox_report_response in domain_mxtoolbox_reports[domain.domain_name].items() %}
                         {% if (domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Warnings'] | length > 0) or
-                            (domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failures'] | length > 0) %}
+                            (domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed'] | length > 0) %}
                             <b> {{ mxtoolbox_report_type }}: </b>
                         
                                 {% if domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Warnings'] | length > 0 %}
@@ -46,16 +46,18 @@ Index
                                         <br>
                                     {% endfor %}
                                 {% endif %}
-                                {% if domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failures'] | length > 0 %}
-                                    {% if domain.domain_mxtoolbox_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                                {% if domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed'] | length > 0 %}
+                                <br>
                                     Failures:
                                     <br>
+                                   {# {{ domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed'] }} #}
                                     {% for failures in domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed']  %}
                                         {{ failures['Name'] }}: 
                                         <a href={{ failures['Url'] }} target='_blank'>{{ failures['Info'] }}</a>
+
                                         <br>
                                     {% endfor %}
-                                    {% if domain.domain_mxtoolbox_health == False %} {{ '</b>' }} {% endif %}
+                                    {# {% if domain.domain_mxtoolbox_health == False %} {{ '</b>' }} {% endif %} #}
                                 {% endif %}
                         {% endif %}
                     {% endfor %}
