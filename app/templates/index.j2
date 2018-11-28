@@ -12,6 +12,41 @@ Index
             <th>MXToolbox</th>
         </tr>
 
+
+    {% for domain in domains %}
+        <tr>
+            <td> <a href='http://localhost:5000/detail/{{ domain.domain_name }}'>{{ domain.domain_name }}</a> </td>
+            <td>
+                {% if domain.domain_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                    {{ domain.domain_health }}
+                {% if domain.domain_health == False %} {{ '</b>' }} {% endif %}
+            </td>
+            <td>
+                {% if domain.domain_registration_expiry_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                    {{ domain.domain_registration_expiry_date }}
+                {% if domain.domain_registration_expiry_health == False %} {{ '</b>' }} {% endif %}
+            </td>
+            <td>
+                {% if domain.domain_ssl_expiry_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                    {{ domain.domain_ssl_expiry_date }}
+                {% if domain.domain_ssl_expiry_health == False %} {{ '</b>' }} {% endif %}
+            </td>
+            <td>
+
+                {% for mxtoolbox_reports in domain_mxtoolbox_reports[domain.domain_name] %}
+                    {% for mxtoolbox_report_type, mxtoolbox_report_response in mxtoolbox_reports %}
+                       {% for key, value in mxtoolbox_report_response.items() %}
+                          <h1>Key: {{key}}</h1>
+                          <h2>Value: {{value}}</h2>
+                       {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+
+
+
 {#     {% for domain_name, domain_data in domains_data.items() %}
         <tr>
             <td> <a href='http://localhost:5000/detail/{{ domain_name }}'>{{ domain_name }}</a> </td>

@@ -5,29 +5,11 @@ from app.utils import utils
 from app.models import *
 
 domain_health_threshold_days = 90
-domain_names = ['fraplin.fun']
+domain_names = ['itsupportguys.net']
 mxtoolbox_reports = ['a', 'dns', 'mx', 'spf', 'blacklist']
 
 def update():
     print("Method to update without creating")
-
-    for report in mxtoolbox_reports:
-        mxtoolbox_response_json = utils.get_mxtoolbox_response(domain_name, report)
-        mxtoolbox_response = json.loads(mxtoolbox_response_json)
-
-        domain_mx_toolbox_health = True
-        if len(mxtoolbox_response['Failed']) > 0:
-           domain_mx_toolbox_health = False
-           domain.domain_health = False
-           domain.save()
-
-        report = MXToolboxReport.create(
-            domain = domain,
-            mx_toolbox_check_time = datetime.now(),
-            command = report,
-            response = mxtoolbox_response,
-            domain_mx_toolbox_health = domain_mx_toolbox_health
-            )
 
 def build():
     domain_health_threshold_date = datetime.now() + timedelta(days = domain_health_threshold_days) 
@@ -62,6 +44,22 @@ def build():
                 'domain_ssl_expiry_date' : domain_ssl_expiry_date,
                 'domain_ssl_expiry_health' : domain_ssl_expiry_health
             }
-        )
+        )[0]
 
+        for report in mxtoolbox_reports:
+            mxtoolbox_response_json = utils.get_mxtoolbox_response(domain_name, report)
+            mxtoolbox_response = json.loads(mxtoolbox_response_json)
 
+            domain_mxtoolbox_health = True
+            if len(mxtoolbox_response['Failed']) > 0:
+               domain_mxtoolbox_health = False
+               domain.domain_health = False
+               domain.domain_mxtoolbox_health = False
+               domain.save()
+
+            report = MXToolboxReport.create(
+                domain = domain,
+                mxtoolbox_check_time = datetime.now(),
+                command = report,
+                response = mxtoolbox_response_json
+                )

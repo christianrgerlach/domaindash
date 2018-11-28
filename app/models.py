@@ -13,10 +13,10 @@ class Domain(BaseModel):
 	domain_registration_expiry_health = BooleanField()
 	domain_ssl_expiry_date = DateField()
 	domain_ssl_expiry_health = BooleanField()
+	domain_mxtoolbox_health = BooleanField(null = True)
 
 class MXToolboxReport(BaseModel):
-	domain = ForeignKeyField(Domain, backref = 'mx_toolbox_reports', null = True)
-	mxtoolbox_check_time = DateTimeField
+	domain = ForeignKeyField(Domain, backref = 'mxtoolbox_reports', null = True)
+	mxtoolbox_check_time = DateTimeField()
 	command = CharField()
 	response = TextField()
-	domain_mx_toolbox_health = BooleanField()

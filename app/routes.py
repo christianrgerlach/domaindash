@@ -1,12 +1,32 @@
 import os
+import json
 from flask import send_from_directory, render_template, redirect, url_for
 
 from app import app
 from app.utils import crud
 
+from app.models import *
+
+domain_mxtoolbox_reports = {}
+
 @app.route('/')
 def index():
-    return render_template('index.j2', domains_data = None)
+    domains = Domain.select()
+    # Instantiate MXToolbox report python objects
+    for domain in domains:
+        # Create a dict to map report type to report object
+        mxtoolbox_reports = {}
+        for mxtoolbox_report in domain.mxtoolbox_reports:
+            # Add object, generated from saved JSON, to our dict, using report type as key
+            mxtoolbox_reports[mxtoolbox_report.command] = json.loads(mxtoolbox_report.response)
+        domain_mxtoolbox_reports[domain.domain_name] = mxtoolbox_reports
+
+        # for key, value in domain_mxtoolbox_reports[domain.domain_name].items():
+        #     print(key)
+        #     print(domain_mxtoolbox_reports[domain.domain_name][key]['Failed'])
+
+
+    return render_template('index.j2', domains = domains, domain_mxtoolbox_reports = domain_mxtoolbox_reports)
 
 # @app.route('/detail/<domain_name>')
 # def domain_detail(domain_name):
@@ -29,6 +49,7 @@ def index():
 @app.route('/build', methods = ['POST'])
 def build():
     crud.build()
+    crud.update()
     return redirect(url_for('index'))
 
 @app.route('/favicon.ico')
