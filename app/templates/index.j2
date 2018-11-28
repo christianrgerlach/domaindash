@@ -50,14 +50,14 @@ Index
                                 <br>
                                     Failures:
                                     <br>
-                                   {# {{ domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed'] }} #}
-                                    {% for failures in domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed']  %}
-                                        {{ failures['Name'] }}: 
-                                        <a href={{ failures['Url'] }} target='_blank'>{{ failures['Info'] }}</a>
+                                   {% if domain.domain_mxtoolbox_health == False %} {{ "<b class='failed'>" | safe }} {% endif %}
+                                        {% for failures in domain_mxtoolbox_reports[domain.domain_name][mxtoolbox_report_type]['Failed']  %}
+                                            {{ failures['Name'] }}: 
+                                            <a href={{ failures['Url'] }} target='_blank'>{{ failures['Info'] }}</a>
 
-                                        <br>
-                                    {% endfor %}
-                                    {# {% if domain.domain_mxtoolbox_health == False %} {{ '</b>' }} {% endif %} #}
+                                            <br>
+                                        {% endfor %}
+                                    {% if domain.domain_mxtoolbox_health == False %} {{ '</b>' }} {% endif %}
                                 {% endif %}
                         {% endif %}
                     {% endfor %}
