@@ -11,16 +11,19 @@ domain_mxtoolbox_reports = {}
 
 @app.route('/')
 def index():
+    print('### Loading index!')
     domains = Domain.select()
     # Instantiate MXToolbox report python objects
     for domain in domains:
+        #print('### Building domain:' + domain.domain_name)
         # Create a dict to map report type to report object
+        #print('### Reports: ' + str(len(domain.mxtoolbox_reports)))
         mxtoolbox_reports = {}
         for mxtoolbox_report in domain.mxtoolbox_reports:
+            #print('Command: ' + mxtoolbox_report.command + 'Result: ' +mxtoolbox_report.response)
             # Add object, generated from saved JSON, to our dict, using report type as key
             mxtoolbox_reports[mxtoolbox_report.command] = json.loads(mxtoolbox_report.response)
         domain_mxtoolbox_reports[domain.domain_name] = mxtoolbox_reports
-
     return render_template('index.j2', domains = domains, domain_mxtoolbox_reports = domain_mxtoolbox_reports)
 
 # @app.route('/detail/<domain_name>')
@@ -44,6 +47,10 @@ def index():
 @app.route('/build', methods = ['POST'])
 def build():
     crud.build()
+    return redirect(url_for('index'))
+
+@app.route('/update', methods = ['POST'])
+def update():
     crud.update()
     return redirect(url_for('index'))
 

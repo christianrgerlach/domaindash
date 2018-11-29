@@ -18,6 +18,11 @@ class Domain(BaseModel):
 
 class MXToolboxReport(BaseModel):
 	domain = ForeignKeyField(Domain, backref = 'mxtoolbox_reports', null = True)
-	mxtoolbox_check_time = DateTimeField()
+	mxtoolbox_check_time = DateTimeField() # Will be depreciated
 	command = CharField()
 	response = TextField()
+
+class MXToolboxBatch(BaseModel):
+	mxtoolbox_batch_time = DateTimeField()
+	domain = ForeignKeyField(Domain, backref = 'mxtoolbox_batch', null = True)
+	report = ForeignKeyField(MXToolboxReport, backref = 'mxtoolbox_batch', null = True)

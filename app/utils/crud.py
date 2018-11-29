@@ -4,18 +4,29 @@ from pythonwhois import get_whois
 from app.utils import utils
 from app.models import *
 
-domain_health_threshold_days = 90
 domain_names = ['google.com', 'itsupportguys.com']
+domain_health_threshold_days = 90
 mxtoolbox_reports = ['a', 'dns', 'mx', 'spf', 'blacklist']
+mxtoolbox_daily_queries = 64
 
 def update():
     print("Method to update without creating")
+
+    # Calculate number of domains we can process
+    mxtoolbox_query_limit =  mxtoolbox_daily_queries // len(mxtoolbox_reports)
+
+    # Sort by domain's last batch timestamp
+    oldest_domains = Domain.select()
+
+
+    for domain in oldest_domains:
+        print(domain.domain_name)
 
 def build():
     domain_health_threshold_date = datetime.now() + timedelta(days = domain_health_threshold_days) 
 
     for domain_name in domain_names:
-
+        now = datetime.now()
         domain_whois = get_whois(domain_name, normalized = True)
         domain_registration_expiry_date = domain_whois['expiration_date'][0]
         ssl_info = utils.get_ssl_info(domain_name)
@@ -39,7 +50,7 @@ def build():
         domain = Domain.get_or_create(
             domain_name = domain_name,
             defaults={
-                'domain_check_time' : datetime.now(),
+                'domain_check_time' : now,
                 'domain_health' : domain_health,
                 'domain_registration_expiry_date' : domain_registration_expiry_date,
                 'domain_registration_expiry_health' : domain_registration_expiry_health,
