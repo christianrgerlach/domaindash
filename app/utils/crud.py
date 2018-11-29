@@ -12,10 +12,27 @@ mxtoolbox_daily_queries = 64
 mxtoolbox_query_limit =  mxtoolbox_daily_queries // len(mxtoolbox_reports)
 
 def update():
+    # Create a new batch
+    batch = MXToolboxBatch.create(mxtoolbox_batch_time = datetime.now())
 
 
-    # Sort by domain's last batch timestamp
-    oldest_domains = Domain.select().join(MXToolboxBatch, JOIN.LEFT_OUTER)
+    # Get domains without MXToolbox report
+    new_domains = Domain.select().where(Domain.mxtoolbox_batch == None)
+
+    # Initialize used_queries to track how many queries are accounted for
+    used_queries = len(new_domains) * mxtoolbox_reports
+
+    # Remaining queries is query limit - used_queries
+    remaining_queries = mxtoolbox_query_limit - used_queries
+
+    # Number of domains we can process is remaining limit divided by the number of reports we request
+    domain_queries = remaining_queries // len(mxtoolbox_reports)
+
+    # Select $domain_queries domains, sorted by timestamp of the most recent batch
+
+    # Get the 
+    MXToolboxReport.select().join(Domain).where(MXToolboxReport.domain == Domain)
+
     print(len(oldest_domains))
 
     for domain in oldest_domains:
