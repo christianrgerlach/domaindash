@@ -5,6 +5,9 @@ class BaseModel(Model):
     class Meta:
         database = db
 
+class MXToolboxBatch(BaseModel):
+	run_time = DateTimeField()
+
 class Domain(BaseModel):
 	domain_check_time = DateTimeField()
 	domain_name = CharField()
@@ -17,11 +20,8 @@ class Domain(BaseModel):
 	domain_mxtoolbox_health = BooleanField(null = True)
 
 class MXToolboxReport(BaseModel):
+	batch = ForeignKeyField(MXToolboxBatch, backref = 'mxtoolbox_reports', null = True)
 	domain = ForeignKeyField(Domain, backref = 'mxtoolbox_reports', null = True)
+	check_time = DateTimeField()
 	command = CharField()
 	response = TextField()
-
-class MXToolboxBatch(BaseModel):
-	mxtoolbox_batch_time = DateTimeField()
-	domain = ForeignKeyField(Domain, backref = 'mxtoolbox_batch', null = True)
-	report = ForeignKeyField(MXToolboxReport, backref = 'mxtoolbox_batch', null = True)

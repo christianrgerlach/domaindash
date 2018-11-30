@@ -15,9 +15,11 @@ def index():
     # Instantiate MXToolbox report python objects
     for domain in domains:
         # Create a dict to map report type to report object
+        print(str(len(domain.mxtoolbox_reports)))
         mxtoolbox_reports = {}
         for mxtoolbox_report in domain.mxtoolbox_reports:
             # Add object, generated from saved JSON, to our dict, using report type as key
+            print(mxtoolbox_report.response)
             mxtoolbox_reports[mxtoolbox_report.command] = json.loads(mxtoolbox_report.response)
         domain_mxtoolbox_reports[domain.domain_name] = mxtoolbox_reports
     return render_template('index.j2', domains = domains, domain_mxtoolbox_reports = domain_mxtoolbox_reports)

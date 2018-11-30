@@ -7,38 +7,38 @@ from app.models import *
 domain_names = ['google.com', 'itsupportguys.com']
 domain_health_threshold_days = 90
 mxtoolbox_reports = ['a', 'dns', 'mx', 'spf', 'blacklist']
-mxtoolbox_daily_queries = 64
+mxtoolbox_daily_query_limit = 64
 # Calculate number of domains we can process
-mxtoolbox_query_limit =  mxtoolbox_daily_queries // len(mxtoolbox_reports)
 
 def update():
     # Create a new batch
-    batch = MXToolboxBatch.create(mxtoolbox_batch_time = datetime.now())
+    batch = MXToolboxBatch.create(run_time = datetime.now())
 
+    # Get domains without full reports
+    new_domains = Domain.select()
 
-    # Get domains without MXToolbox report
-    new_domains = Domain.select().where(Domain.mxtoolbox_batch == None)
-
+    print('### new_domains: ' + str(len(new_domains)))
     # Initialize used_queries to track how many queries are accounted for
-    used_queries = len(new_domains) * mxtoolbox_reports
+    used_queries = len(new_domains) * len(mxtoolbox_reports)
 
     # Remaining queries is query limit - used_queries
-    remaining_queries = mxtoolbox_query_limit - used_queries
+    remaining_queries = mxtoolbox_daily_query_limit - used_queries
 
-    # Number of domains we can process is remaining limit divided by the number of reports we request
-    domain_queries = remaining_queries // len(mxtoolbox_reports)
+    # Get the oldest N (remainging_queries) reports
 
-    # Select $domain_queries domains, sorted by timestamp of the most recent batch
+    oldest_reports = MXToolboxReport.select().order_by(MXToolboxReport.check_time).limit(remaining_queries)
+    print('### oldest_reports: ' + str(len(oldest_reports)))
+    for old_report in oldest_reports:
+        print('#### ' + str(old_report.check_time))
 
-    # Get the 
-    MXToolboxReport.select().join(Domain).where(MXToolboxReport.domain == Domain)
 
-    print(len(oldest_domains))
 
-    for domain in oldest_domains:
-        print(domain.domain_name)
+    # Create or new queries (does this last so as not to potentially process twice)
 
+    for domain in new_domains:
+        print('Processing new domain: ' + domain.domain_name)
         for report in mxtoolbox_reports:
+            print('Creating report: ' + report)
             mxtoolbox_response_json = utils.get_mxtoolbox_response(domain.domain_name, report)
             mxtoolbox_response = json.loads(mxtoolbox_response_json)
 
@@ -51,7 +51,7 @@ def update():
 
             report = MXToolboxReport.create(
                 domain = domain,
-                mxtoolbox_check_time = datetime.now(),
+                check_time = datetime.now(),
                 command = report,
                 response = mxtoolbox_response_json
                 )
