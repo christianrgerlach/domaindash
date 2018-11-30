@@ -14,7 +14,7 @@ def update():
     # Create a new batch
     batch = MXToolboxBatch.create(run_time = datetime.now())
 
-    # Get domains without full reports
+    # Get domains without full reports -- TODO
     new_domains = Domain.select()
 
     print('### new_domains: ' + str(len(new_domains)))
@@ -26,7 +26,7 @@ def update():
 
     # Get the oldest N (remainging_queries) reports
 
-    oldest_reports = MXToolboxReport.select().order_by(MXToolboxReport.check_time).limit(remaining_queries)
+    oldest_reports = MXToolboxReport.select().order_by(MXToolboxReport.check_time).limit(3)
     print('### oldest_reports: ' + str(len(oldest_reports)))
     for old_report in oldest_reports:
         print('#### ' + str(old_report.check_time))
