@@ -17,7 +17,7 @@ class Domain(BaseModel):
 	domain_mxtoolbox_health = BooleanField(null = True)
 
 class MXToolboxReport(BaseModel):
-	domain = ForeignKeyField(Domain, backref = 'mxtoolbox_reports', null = True)
+	domain = ForeignKeyField(Domain, backref = 'mxtoolbox_reports')
 	check_time = DateTimeField(null = True)
 	command = CharField()
 	response = TextField(null = True)

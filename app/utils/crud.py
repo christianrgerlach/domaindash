@@ -14,49 +14,64 @@ mxtoolbox_daily_query_limit = 64
 
 def update():
     # Get never-run reports without full reports -- TODO
-    new_reports = mxtoolbox_reports.select().where( check_time >> None)
+    new_reports = MXToolboxReport.select().where(MXToolboxReport.check_time.is_null(True)).limit(64)
 
-    print('### new_domains: ' + str(len(new_domains)))
-    # Initialize used_queries to track how many queries are accounted for
-    used_queries = len(new_domains) * len(mxtoolbox_reports)
+    print('### new_reports: ' + str(len(new_reports)))
 
-    # Remaining queries is query limit - used_queries
-    remaining_queries = mxtoolbox_daily_query_limit - used_queries
+    # Remaing queries is limit - length of new ones
+    remaining_queries = mxtoolbox_daily_query_limit - len(new_reports)
 
     # Get the oldest N (remainging_queries) reports
-    oldest_reports = MXToolboxReport.select().order_by(MXToolboxReport.check_time).limit(3)
+    oldest_reports = MXToolboxReport.select().where( MXToolboxReport.check_time.is_null(False)).order_by(MXToolboxReport.check_time).limit(remaining_queries)
     print('### oldest_reports: ' + str(len(oldest_reports)))
     for old_report in oldest_reports:
         print('#### ' + str(old_report.check_time))
 
-    # Create or new queries (does this last so as not to potentially process twice)
-    for domain in new_domains:
-        print('Processing new domain: ' + domain.domain_name)
-        for report in mxtoolbox_reports:
-            print('Creating report: ' + report)
-            mxtoolbox_response_json = utils.get_mxtoolbox_response(domain.domain_name, report)
-            mxtoolbox_response = json.loads(mxtoolbox_response_json)
+    # For now treat new reports as all reports
+    reports = new_reports
 
-            domain_mxtoolbox_health = True
-            if len(mxtoolbox_response['Failed']) > 0:
-               domain_mxtoolbox_health = False
-               domain.domain_health = False
-               domain.domain_mxtoolbox_health = False
-               domain.save()
+    for report in reports:
+        mxtoolbox_response_json = utils.get_mxtoolbox_response(report.domain.domain_name, report.command)
 
-            report = MXToolboxReport.create(
-                domain = domain,
-                check_time = datetime.now(),
-                command = report,
-                response = mxtoolbox_response_json
-                )
+        report.check_time = datetime.now()
+        report.response = mxtoolbox_response_json
+        report.save()
+
+        mxtoolbox_response = json.loads(mxtoolbox_response_json)
+        domain_mxtoolbox_health = True
+        if len(mxtoolbox_response['Failed']) > 0:
+           report.domain.domain_mxtoolbox_health = False
+           report.domain.domain_health = False
+           report.domain.domain_mxtoolbox_health = False
+           report.domain.save()
+
+    # # Create or new queries (does this last so as not to potentially process twice)
+    # for new_report in new_reports:
+    #     print('Processing new report for: ' + new_report.domain.domain_name)
+    #     for report in mxtoolbox_reports:
+    #         print('Creating report: ' + report)
+    #         mxtoolbox_response_json = utils.get_mxtoolbox_response(domain.domain_name, report)
+    #         mxtoolbox_response = json.loads(mxtoolbox_response_json)
+
+    #         domain_mxtoolbox_health = True
+    #         if len(mxtoolbox_response['Failed']) > 0:
+    #            domain_mxtoolbox_health = False
+    #            domain.domain_health = False
+    #            domain.domain_mxtoolbox_health = False
+    #            domain.save()
+
+    #         report = MXToolboxReport.create(
+    #             domain = domain,
+    #             check_time = datetime.now(),
+    #             command = report,
+    #             response = mxtoolbox_response_json
+    #             )
 
 def build():
     domain_health_threshold_date = datetime.now() + timedelta(days = domain_health_threshold_days) 
 
     for domain_name in domain_names:
         now = datetime.now()
-        print(now)
         domain_whois = get_whois(domain_name, normalized = True)
         domain_registration_expiry_date = domain_whois['expiration_date'][0]
         ssl_info = utils.get_ssl_info(domain_name)
@@ -86,20 +101,23 @@ def build():
             domain.domain_ssl_expiry_health = domain.domain_ssl_expiry_health
             domain.save()
         except peewee.DoesNotExist:
-            print('### now: ' + str(now))
             domain = Domain.create(
                 domain_name = domain_name,
-                defaults={
-                    'domain_check_time' : now,
-                    'domain_health' : domain_health,
-                    'domain_registration_expiry_date' : domain_registration_expiry_date,
-                    'domain_registration_expiry_health' : domain_registration_expiry_health,
-                    'domain_ssl_issuer_cn' : domain_ssl_issuer_cn,
-                    'domain_ssl_expiry_date' : domain_ssl_expiry_date,
-                    'domain_ssl_expiry_health' : domain_ssl_expiry_health
-                }
+                domain_check_time = now,
+                domain_health = domain_health,
+                domain_registration_expiry_date =   domain_registration_expiry_date,
+                domain_registration_expiry_health = domain_registration_expiry_health,
+                domain_ssl_issuer_cn = domain_ssl_issuer_cn,
+                domain_ssl_expiry_date = domain_ssl_expiry_date,
+                domain_ssl_expiry_health = domain_ssl_expiry_health
             )
-
+            # Create our blank MXToolbox reports
+            for report in mxtoolbox_reports:
+                report = MXToolboxReport.create(
+                    domain = domain,
+                    command = report,
+                    response = '{}'
+                    )
 
 
 
