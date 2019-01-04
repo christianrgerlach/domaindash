@@ -5,8 +5,6 @@ class BaseModel(Model):
     class Meta:
         database = db
 
-
-
 class Domain(BaseModel):
 	domain_check_time = DateTimeField()
 	domain_name = CharField()
@@ -18,13 +16,8 @@ class Domain(BaseModel):
 	domain_ssl_expiry_health = BooleanField()
 	domain_mxtoolbox_health = BooleanField(null = True)
 
-class MXToolboxBatch(BaseModel):
-	run_time = DateTimeField()
-	domain = ForeignKeyField(Domain, backref = 'mxtoolbox_batches', null = True)
-
 class MXToolboxReport(BaseModel):
-	batch = ForeignKeyField(MXToolboxBatch, backref = 'mxtoolbox_reports', null = True)
 	domain = ForeignKeyField(Domain, backref = 'mxtoolbox_reports', null = True)
-	check_time = DateTimeField()
+	check_time = DateTimeField(null = True)
 	command = CharField()
-	response = TextField()
+	response = TextField(null = True)

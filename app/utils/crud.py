@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 import json
+import peewee
 from pythonwhois import get_whois
 from app.utils import utils
 from app.models import *
+
 
 domain_names = ['google.com', 'itsupportguys.com']
 domain_health_threshold_days = 90
@@ -11,11 +13,8 @@ mxtoolbox_daily_query_limit = 64
 # Calculate number of domains we can process
 
 def update():
-    # Create a new batch
-    batch = MXToolboxBatch.create(run_time = datetime.now())
-
-    # Get domains without full reports -- TODO
-    new_domains = Domain.select()
+    # Get never-run reports without full reports -- TODO
+    new_reports = mxtoolbox_reports.select().where( check_time >> None)
 
     print('### new_domains: ' + str(len(new_domains)))
     # Initialize used_queries to track how many queries are accounted for
@@ -25,16 +24,12 @@ def update():
     remaining_queries = mxtoolbox_daily_query_limit - used_queries
 
     # Get the oldest N (remainging_queries) reports
-
     oldest_reports = MXToolboxReport.select().order_by(MXToolboxReport.check_time).limit(3)
     print('### oldest_reports: ' + str(len(oldest_reports)))
     for old_report in oldest_reports:
         print('#### ' + str(old_report.check_time))
 
-
-
     # Create or new queries (does this last so as not to potentially process twice)
-
     for domain in new_domains:
         print('Processing new domain: ' + domain.domain_name)
         for report in mxtoolbox_reports:
@@ -61,6 +56,7 @@ def build():
 
     for domain_name in domain_names:
         now = datetime.now()
+        print(now)
         domain_whois = get_whois(domain_name, normalized = True)
         domain_registration_expiry_date = domain_whois['expiration_date'][0]
         ssl_info = utils.get_ssl_info(domain_name)
@@ -79,18 +75,31 @@ def build():
             domain_health = False
             domain_ssl_expiry_health = False
 
-        # Get or create our domain
-        # Currently no need to get but fetching for possible future usage
-        domain = Domain.get_or_create(
-            domain_name = domain_name,
-            defaults={
-                'domain_check_time' : now,
-                'domain_health' : domain_health,
-                'domain_registration_expiry_date' : domain_registration_expiry_date,
-                'domain_registration_expiry_health' : domain_registration_expiry_health,
-                'domain_ssl_issuer_cn' : domain_ssl_issuer_cn,
-                'domain_ssl_expiry_date' : domain_ssl_expiry_date,
-                'domain_ssl_expiry_health' : domain_ssl_expiry_health
-            }
-        )[0]
-        # ^ get_or_create returns tuple, with second value bool representing creation
+        try:
+            domain = Domain.get(Domain.domain_name == domain_name)
+            domain.domain_check_time = now
+            domain.domain_health = domain_health
+            domain.domain_registration_expiry_date = domain_registration_expiry_date
+            domain.domain_registration_expiry_health = domain_registration_expiry_health
+            domain.domain_ssl_issuer_cn = domain_ssl_issuer_cn
+            domain.domain_ssl_expiry_date = domain_ssl_expiry_date
+            domain.domain_ssl_expiry_health = domain.domain_ssl_expiry_health
+            domain.save()
+        except peewee.DoesNotExist:
+            print('### now: ' + str(now))
+            domain = Domain.create(
+                domain_name = domain_name,
+                defaults={
+                    'domain_check_time' : now,
+                    'domain_health' : domain_health,
+                    'domain_registration_expiry_date' : domain_registration_expiry_date,
+                    'domain_registration_expiry_health' : domain_registration_expiry_health,
+                    'domain_ssl_issuer_cn' : domain_ssl_issuer_cn,
+                    'domain_ssl_expiry_date' : domain_ssl_expiry_date,
+                    'domain_ssl_expiry_health' : domain_ssl_expiry_health
+                }
+            )
+
+
+
+
