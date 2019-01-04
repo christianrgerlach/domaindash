@@ -6,11 +6,10 @@ from app.utils import utils
 from app.models import *
 
 
-domain_names = ['google.com', 'itsupportguys.com']
+domain_names = ['google.com', 'fraplin.fun']
 domain_health_threshold_days = 90
 mxtoolbox_reports = ['a', 'dns', 'mx', 'spf', 'blacklist']
 mxtoolbox_daily_query_limit = 64
-# Calculate number of domains we can process
 
 def update():
     # Get never-run reports without full reports -- TODO
@@ -25,9 +24,10 @@ def update():
     oldest_reports = MXToolboxReport.select().where( MXToolboxReport.check_time.is_null(False)).order_by(MXToolboxReport.check_time).limit(remaining_queries)
     print('### oldest_reports: ' + str(len(oldest_reports)))
     for old_report in oldest_reports:
-        print('#### ' + str(old_report.check_time))
+        print('#### domain: %s command: %s check time: %s ' % (old_report.domain.domain_name, old_report.command, old_report.check_time))
 
     # For now treat new reports as all reports
+    # TODO join oldest_reports
     reports = new_reports
 
     for report in reports:
@@ -44,28 +44,6 @@ def update():
            report.domain.domain_health = False
            report.domain.domain_mxtoolbox_health = False
            report.domain.save()
-
-    # # Create or new queries (does this last so as not to potentially process twice)
-    # for new_report in new_reports:
-    #     print('Processing new report for: ' + new_report.domain.domain_name)
-    #     for report in mxtoolbox_reports:
-    #         print('Creating report: ' + report)
-    #         mxtoolbox_response_json = utils.get_mxtoolbox_response(domain.domain_name, report)
-    #         mxtoolbox_response = json.loads(mxtoolbox_response_json)
-
-    #         domain_mxtoolbox_health = True
-    #         if len(mxtoolbox_response['Failed']) > 0:
-    #            domain_mxtoolbox_health = False
-    #            domain.domain_health = False
-    #            domain.domain_mxtoolbox_health = False
-    #            domain.save()
-
-    #         report = MXToolboxReport.create(
-    #             domain = domain,
-    #             check_time = datetime.now(),
-    #             command = report,
-    #             response = mxtoolbox_response_json
-    #             )
 
 def build():
     domain_health_threshold_date = datetime.now() + timedelta(days = domain_health_threshold_days) 
